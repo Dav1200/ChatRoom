@@ -34,6 +34,20 @@ public class ServerHost {
                         while ((line = reader.readLine()) != null) {
                             System.out.println("Client says: " + line);
 
+                            if(line.charAt(0) == '/'){
+                                switch (line){
+
+                                    case "/help":
+                                        writer.println("/quit");
+                                        break;
+                                    case "/quit":
+                                        socket.close();;
+                                }
+
+
+
+                            }
+
                             // Example: Send a response back to the client
                             writer.println("Server received: " + line);
 
