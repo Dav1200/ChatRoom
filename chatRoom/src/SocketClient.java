@@ -3,35 +3,36 @@ import java.net.*;
 
 public class SocketClient {
     public static void main(String[] args) {
-        String serverAddress = "25.39.195.191"; // Replace with the server's IP address or hostname
-        int serverPort = 15555; // Replace with the port number your server is listening on
+        final String serverAddress = "25.39.195.191"; // Change this to your server's IP address or hostname
+        final int serverPort = 15555; // Change this to your server's port
 
-        try {
-            // Create a socket to connect to the server
-            Socket socket = new Socket(serverAddress, serverPort);
+        try (Socket socket = new Socket(serverAddress, serverPort);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in)) ) {
 
-            // Create input and output streams for communication with the server
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Connected to the server.");
+
+            Thread serverListener = new Thread(() -> {
+                try {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println("Server: " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            serverListener.start();
+
             while (true) {
-                // Read a message from the console
-                System.out.print("Enter a message to send to the server: ");
-                String message = consoleInput.readLine();
-
-                // Send the message to the server
-                out.println(message);
-
-                // Receive and print the server's response
-                String serverResponse = in.readLine();
-                System.out.println("Server says: " + serverResponse);
-
-                // Optionally, you can add a condition to exit the loop
-                // if a certain message is received from the server.
-                // For example:
-                // if ("exit".equalsIgnoreCase(serverResponse)) {
-                //     break;
-                // }
+                String message = userInput.readLine();
+                if (message.equals("exit")) {
+                    // Exit the loop if the user types "exit"
+                    break;
+                }
+                System.out.println("Client: " + message);
+                writer.println(message);
             }
         } catch (IOException e) {
             e.printStackTrace();
