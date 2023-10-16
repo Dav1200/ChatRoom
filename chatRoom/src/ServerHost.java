@@ -12,7 +12,7 @@ public class ServerHost {
         try {
             InetAddress ipAddress = InetAddress.getByName("25.39.195.191"); // Replace with the desired IP address
             int port = 15555;
-
+            weatherApp();
             serverSocket = new ServerSocket(port, 0, ipAddress);
             handleIncomingConnections();
         } catch (IOException e) {
@@ -32,6 +32,7 @@ public class ServerHost {
                         PrintWriter writer = new PrintWriter(output, true);
                         InputStream input = socket.getInputStream();
                         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                        System.out.println("Client Connected");
                         writer.println("Please Provide your NickName ");
                         String name = reader.readLine();
                         // Handle client response
@@ -54,6 +55,7 @@ public class ServerHost {
                                         socket.close();
                                         break; // Added a break to exit the switch statement
                                     case "/game1":
+
                                         higherLower(writer, reader);
                                         break; // Added a break to exit the switch statement
                                 }
@@ -82,6 +84,26 @@ public class ServerHost {
         }
     }
 
+
+    public static void weatherApp(){
+        String jarPath = "C:\\Users\\harvi\\Documents\\GitHub\\ChatRoom\\chatRoom\\src\\weatherApp - Copy.jar"; // Replace with the actual path to the JAR file
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", jarPath);
+            Process process = processBuilder.start();
+
+            // Optional: You can wait for the external JAR process to complete
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                System.out.println("External JAR executed successfully.");
+            } else {
+                System.err.println("External JAR execution failed with exit code: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void higherLower(PrintWriter writer, BufferedReader reader) throws IOException {
         Random rand = new Random();
