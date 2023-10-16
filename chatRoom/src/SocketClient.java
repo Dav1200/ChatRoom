@@ -31,7 +31,7 @@ public class SocketClient {
                     // Exit the loop if the user types "exit"
                     break;
                 }
-                System.out.println("Client: " + message);
+                //System.out.println("Client: " + message);
                 writer.println(message);
             }
         } catch (IOException e) {
